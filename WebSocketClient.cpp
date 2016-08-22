@@ -50,12 +50,29 @@ void WebSocketClient::monitor() {
 
 	size_t sizes = strlen(databuffer);
 
-	char* new_data = new char[sizes-2];
-	for (int i = 0; i< sizes-2; i+=1){
-	new_data[i] = databuffer[i+2];
+	int j = 0;
+	int total;
+	char* new_data;
+
+	for (int i = 0; i< sizes; i+=1){
+
+		if (j == 0){
+			j++;
+		}else if (j == 1){
+			total = databuffer[i];
+			new_data = new char[total];
+			j++;
+		}else if((j - 1) >= total){
+			new_data[j - 2] = databuffer[i];
+			new_data[j - 1] = '\0';
+			onData(new_data);
+			j=0;
+			continue;
+		}else{
+			new_data[j - 2] = databuffer[i];
+			j++;
+		}
 	}
-	new_data[sizes-2] = '\0';
-	onData(new_data);
 
 }
 
